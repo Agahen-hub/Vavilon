@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAVILON FOOD | Электронное меню</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Syne & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              black: '#0D0E12',
+              card: '#16181F',
+              border: '#232733',
+              amber: '#FF7A00',
+              yellow: '#FFB800',
+              red: '#FF3B30'
+            }
+          },
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0D0E12;
+      color: #F3F4F6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-brand {
+      font-family: 'Syne', sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .amber-glow {
+      box-shadow: 0 0 35px -5px rgba(255, 122, 0, 0.35);
+    }
+    .tag-badge {
+      background: linear-gradient(135deg, rgba(255,122,0,0.18), rgba(255,184,0,0.08));
+      border: 1px solid rgba(255,122,0,0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-32 selection:bg-brand-amber selection:text-black">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-[#0D0E12]/90 backdrop-blur-md border-b border-brand-border">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-amber to-brand-yellow flex items-center justify-center font-brand font-black text-black text-xl shadow-lg shadow-brand-amber/20">
+          V
+        </div>
+        <div>
+          <h1 class="font-brand font-black text-lg tracking-wider text-white leading-none">VAVILON<span class="text-brand-amber">.FOOD</span></h1>
+          <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Сочно. Мощно. Свежо
+          </p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <a href="https://www.instagram.com/vavilon_food_/?hl=ru" target="_blank" class="p-2 rounded-xl bg-brand-card border border-brand-border hover:border-brand-amber transition-colors text-gray-300 hover:text-white" title="Instagram">
+          <i data-lucide="instagram" class="w-5 h-5"></i>
+        </a>
+        <button onclick="toggleCartModal(true)" class="relative p-2.5 rounded-xl bg-gradient-to-r from-brand-amber to-brand-yellow text-black font-bold flex items-center gap-2 shadow-md hover:opacity-90 active:scale-95 transition">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <span id="cart-counter" class="text-xs px-1.5 py-0.5 rounded-full bg-black text-white font-mono hidden">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CATEGORIES TABS -->
+    <div class="max-w-4xl mx-auto px-4 py-2.5 overflow-x-auto hide-scrollbar flex items-center space-x-2 border-t border-brand-border/40">
+      <button onclick="filterCategory('all')" class="cat-pill active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-amber text-black transition-all">Все блюда</button>
+      <button onclick="filterCategory('doner')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🌯 Донеры</button>
+      <button onclick="filterCategory('baget')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🥖 В багете</button>
+      <button onclick="filterCategory('burger')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🍔 Бургеры</button>
+      <button onclick="filterCategory('hotdog')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🌭 Хот-доги</button>
+      <button onclick="filterCategory('snack')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🍟 Снэки & Соусы</button>
+      <button onclick="filterCategory('drinks')" class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-brand-card text-gray-300 border border-brand-border hover:border-brand-amber/50 transition-all">🥤 Напитки</button>
+    </div>
+  </header>
+
+  <!-- PROMO BANNER -->
+  <section class="max-w-4xl mx-auto px-4 mt-4">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-neutral-900 via-neutral-900 to-amber-950/40 border border-brand-border p-5 amber-glow">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-brand-amber/20 text-brand-amber border border-brand-amber/30">
+            🔥 Хит сезона
+          </span>
+          <h2 class="text-xl md:text-2xl font-brand font-black text-white mt-2">VAVI ДОНЕР & БУРГЕР</h2>
+          <p class="text-xs md:text-sm text-gray-300 max-w-md mt-1">Особый лаваш ручной лепки, сочный сыр Чеддер и наш секретный фирменный соус.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="quickOrderVavi()" class="px-4 py-2.5 rounded-xl bg-brand-amber hover:bg-brand-yellow text-black font-bold text-xs uppercase tracking-wider transition active:scale-95">
+            Заказать Вави Донер
+          </button>
+        </div>
+      </div>
+      <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-brand-amber/10 rounded-full blur-2xl"></div>
+    </div>
+  </section>
+
+  <!-- SEARCH & FILTER -->
+  <div class="max-w-4xl mx-auto px-4 mt-5">
+    <div class="relative">
+      <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+      <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Поиск блюд (например: чеддер, острый, наггетсы...)" 
+             class="w-full pl-10 pr-4 py-2.5 bg-brand-card border border-brand-border rounded-xl text-sm focus:outline-none focus:border-brand-amber placeholder-gray-500 text-white transition">
+    </div>
+  </div>
+
+  <!-- MENU LIST / GRID -->
+  <main class="max-w-4xl mx-auto px-4 mt-6">
+    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <!-- Items dynamically populated -->
+    </div>
+    <div id="noResults" class="hidden text-center py-16 text-gray-400">
+      <i data-lucide="utensils" class="w-10 h-10 mx-auto text-gray-600 mb-2"></i>
+      <p class="text-sm">Ничего не найдено по вашему запросу</p>
+    </div>
+  </main>
+
+  <!-- BOTTOM FLOATING CART BAR (WHEN ITEMS SELECTED) -->
+  <div id="floatingCart" class="fixed bottom-4 left-4 right-4 z-30 max-w-md mx-auto hidden">
+    <button onclick="toggleCartModal(true)" class="w-full bg-gradient-to-r from-brand-amber to-brand-yellow text-black font-bold p-3.5 rounded-2xl shadow-xl flex items-center justify-between active:scale-98 transition transform">
+      <div class="flex items-center gap-3">
+        <span class="w-7 h-7 rounded-lg bg-black text-white text-xs font-mono flex items-center justify-center font-bold" id="floatingCartCount">0</span>
+        <span class="text-sm font-semibold">Ваш заказ готов к оформлению</span>
+      </div>
+      <div class="flex items-center gap-1.5 font-brand font-black text-base">
+        <span id="floatingCartTotal">0</span> ₸
+        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+      </div>
+    </button>
+  </div>
+
+  <!-- CART MODAL / CHECKOUT DRAWER -->
+  <div id="cartModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center transition-all">
+    <div class="w-full max-w-lg bg-[#16181F] border border-brand-border rounded-t-3xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 border-b border-brand-border flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-amber"></i>
+          <h3 class="font-brand font-black text-lg text-white">Корзина заказа</h3>
+        </div>
+        <button onclick="toggleCartModal(false)" class="p-1.5 rounded-xl hover:bg-neutral-800 text-gray-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Cart Items Container -->
+      <div id="cartItemsList" class="p-4 overflow-y-auto space-y-3 flex-1">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Drawer Footer & Action -->
+      <div class="p-4 bg-[#0F1015] border-t border-brand-border space-y-3">
+        
+        <!-- Options: Takeaway or In-Place -->
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <label class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-brand-border cursor-pointer has-[:checked]:border-brand-amber has-[:checked]:bg-brand-amber/10 text-gray-300 has-[:checked]:text-white transition">
+            <input type="radio" name="orderType" value="С собой" checked class="hidden">
+            <span>🥡 С собой</span>
+          </label>
+          <label class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-brand-border cursor-pointer has-[:checked]:border-brand-amber has-[:checked]:bg-brand-amber/10 text-gray-300 has-[:checked]:text-white transition">
+            <input type="radio" name="orderType" value="В заведении" class="hidden">
+            <span>🍽️ В заведении</span>
+          </label>
+        </div>
+
+        <div class="flex items-center justify-between text-sm py-1 border-t border-brand-border/40">
+          <span class="text-gray-400 font-medium">Итого к оплате:</span>
+          <span class="font-brand font-black text-xl text-brand-amber"><span id="cartModalTotal">0</span> ₸</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="sendOrderWhatsApp()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            WhatsApp
+          </button>
+          <button onclick="openPaymentSheet()" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-amber to-brand-yellow active:scale-95 text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="qr-code" class="w-4 h-4"></i>
+            Оплата / Kaspi
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PAYMENT QR MODAL -->
+  <div id="paymentModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-[#16181F] border border-brand-border max-w-sm w-full rounded-2xl p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-brand-amber/20 text-brand-amber flex items-center justify-center mx-auto">
+        <i data-lucide="credit-card" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h4 class="font-brand font-black text-lg text-white">Оплата заказа</h4>
+        <p class="text-xs text-gray-400 mt-1">Покажите этот экран кассиру или оплатите переводом Kaspi</p>
+      </div>
+
+      <div class="bg-black/50 p-4 rounded-xl border border-brand-border/80">
+        <p class="text-xs text-gray-400 uppercase tracking-widest font-mono">Сумма к оплате</p>
+        <p class="font-brand font-black text-3xl text-brand-amber mt-1"><span id="payAmount">0</span> ₸</p>
+      </div>
+
+      <div class="text-left text-xs text-gray-300 space-y-2 bg-[#0F1015] p-3.5 rounded-xl border border-brand-border/40">
+        <div class="flex justify-between">
+          <span class="text-gray-400">Тип:</span>
+          <span id="payOrderType" class="font-semibold text-white">С собой</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Кол-во позиций:</span>
+          <span id="payItemsCount" class="font-semibold text-white">0 шт.</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="togglePaymentModal(false)" class="flex-1 py-2.5 rounded-xl bg-neutral-800 text-gray-300 font-semibold text-xs hover:bg-neutral-700 transition">
+          Закрыть
+        </button>
+        <button onclick="orderConfirmed()" class="flex-1 py-2.5 rounded-xl bg-brand-amber text-black font-bold text-xs hover:bg-brand-yellow transition">
+          Оплачено ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // FULL MENU DATA AS REQUESTED
+    const menuData = [
+      // Дoнеры
+      {
+        id: 'doner_imba',
+        name: 'Донер имба 1.5',
+        category: 'doner',
+        price: 2050,
+        desc: 'Помидоры, Огурцы, Мясо, Картофель Фри, Кетчуп, Фирменный соус',
+        badge: 'Сытный 1.5'
+      },
+      {
+        id: 'doner_standart',
+        name: 'Донер стандарт',
+        category: 'doner',
+        price: 1350,
+        desc: 'Лаваш, Помидоры, Огурцы, Мясо, Картофель Фри, Кетчуп, Фирменный соус'
+      },
+      {
+        id: 'doner_spicy',
+        name: 'Донер острый',
+        category: 'doner',
+        price: 1450,
+        desc: 'Лаваш, Помидоры, Огурцы, Мясо, Картофель Фри, Кетчуп, Фирменный соус, Халапеньо',
+        badge: 'Острый 🌶️'
+      },
+      {
+        id: 'doner_cheese',
+        name: 'Донер сырный',
+        category: 'doner',
+        price: 1450,
+        desc: 'Лаваш, Помидоры, Огурцы, Мясо, Картофель фри, Кетчуп, Сырный соус, Фирменный соус'
+      },
+      {
+        id: 'doner_vavi',
+        name: 'Вави Донер',
+        category: 'doner',
+        price: 1750,
+        desc: 'Лаваш ручной лепки, Помидоры, Огурцы свежие, Лист салата, Красный лук, Сыр чеддер, Мясо, Картофель Фри, Кетчуп, Фирменный соус',
+        badge: 'Фирменный ⭐'
+      },
+      {
+        id: 'doner_dog',
+        name: 'Донер Дог',
+        category: 'doner',
+        price: 1300,
+        desc: 'Лаваш, Огурец, Помидор, Сосиски, Картофель Фри, Кетчуп, Белый соус'
+      },
+
+      // В багете
+      {
+        id: 'baget_standart',
+        name: 'Донер в багете стандарт',
+        category: 'baget',
+        price: 1400,
+        desc: 'Булка, Белый соус, Мясо, Помидоры, Огурцы, Картофель Фри, Кетчуп'
+      },
+      {
+        id: 'baget_spicy',
+        name: 'Донер в багете острый',
+        category: 'baget',
+        price: 1500,
+        desc: 'Булочка, Белый соус, Мясо, Помидоры, Огурцы, Картофель Фри, Кетчуп, Халапеньо',
+        badge: '🌶️ Острый'
+      },
+      {
+        id: 'baget_vavi',
+        name: 'Вави Донер в багете',
+        category: 'baget',
+        price: 1800,
+        desc: 'Булочка, Белый соус, Сыр чеддер, Мясо, Огурцы, Помидоры, Красный лук, Лист салата, Кетчуп',
+        badge: 'Шеф-выбор'
+      },
+      {
+        id: 'baget_full',
+        name: 'Донер в багете полный',
+        category: 'baget',
+        price: 1600,
+        desc: 'Булочка, Белый соус, Мясо, Помидоры, Огурцы, Картофель Фри, Кетчуп, Халапеньо, Сырный соус'
+      },
+      {
+        id: 'baget_cheese',
+        name: 'Донер в багете сырный',
+        category: 'baget',
+        price: 1500,
+        desc: 'Булочка, Белый соус, Мясо, Огурец, Помидор, Картофель Фри, Кетчуп, Сырный соус'
+      },
+
+      // Бургеры
+      {
+        id: 'burger_standart',
+        name: 'Бургер стандарт',
+        category: 'burger',
+        price: 1350,
+        desc: 'Булочка кунжутная, фирменный соус, гриль соус, Огурцы, Помидоры, Лист салата, Котлеты'
+      },
+      {
+        id: 'burger_vavi',
+        name: 'Vavi Бургер',
+        category: 'burger',
+        price: 1650,
+        desc: 'Булочка с кунжутом, фирменный соус, гриль соус, огурцы свежие, лист салата, помидоры свежие, красный лук, котлета, ломтик сыра Чеддер',
+        badge: 'ТОП 🍔'
+      },
+
+      // Хот-доги (с возможностью выбора маленький / большой)
+      {
+        id: 'hotdog_mexican',
+        name: 'Мексиканский хот-дог',
+        category: 'hotdog',
+        hasSize: true,
+        priceSmall: 600,
+        priceBig: 800,
+        desc: 'Кунжутная булочка, говяжья сосиска, халапеньо, соусы, кукуруза'
+      },
+      {
+        id: 'hotdog_grill',
+        name: 'Гриль хот-дог',
+        category: 'hotdog',
+        hasSize: true,
+        priceSmall: 600,
+        priceBig: 800,
+        desc: 'Кунжутная булочка, говяжья сосиска, помидор, огурец, соусы, гриль соус'
+      },
+      {
+        id: 'hotdog_cheese',
+        name: 'Сырный хот-дог',
+        category: 'hotdog',
+        hasSize: true,
+        priceSmall: 800,
+        priceBig: 1000,
+        desc: 'Кунжутная булочка, говяжья сосиска, сыр чеддер, красный лук, лист салата, кукуруза, соусы',
+        badge: 'Сырный бум'
+      },
+      {
+        id: 'hotdog_american',
+        name: 'Американский хот-дог',
+        category: 'hotdog',
+        hasSize: true,
+        priceSmall: 600,
+        priceBig: 800,
+        desc: 'Кунжутная булочка, говяжья сосиска, фирменный соус, кетчуп'
+      },
+
+      // Снэки и допы
+      {
+        id: 'snack_nuggets_5',
+        name: 'Допинг Наггетсы (5 шт.)',
+        category: 'snack',
+        price: 850,
+        desc: 'Хрустящие наггетсы из куриного филе. Соус в подарок!'
+      },
+      {
+        id: 'snack_nuggets_10',
+        name: 'Допинг Наггетсы (10 шт.)',
+        category: 'snack',
+        price: 1600,
+        desc: 'Большая порция золотистых наггетсов. Соус в подарок!'
+      },
+      {
+        id: 'snack_fries',
+        name: 'Картофель Фри 150г',
+        category: 'snack',
+        price: 850,
+        desc: 'Золотистый, хрустящий картофель фри. Соус в подарок!'
+      },
+      {
+        id: 'extra_cheese_sauce',
+        name: 'Доп. Сырный соус',
+        category: 'snack',
+        price: 100,
+        desc: 'Нежный сырный соус'
+      },
+      {
+        id: 'extra_jalapeno',
+        name: 'Доп. Халапеньо',
+        category: 'snack',
+        price: 100,
+        desc: 'Пикантные острые перчики халапеньо'
+      },
+
+      // Напитки
+      {
+        id: 'pepsi_1',
+        name: 'Pepsi 1 л',
+        category: 'drinks',
+        price: 700,
+        desc: 'Освежающий газированный напиток'
+      },
+      {
+        id: 'pepsi_05',
+        name: 'Pepsi 0.5 л',
+        category: 'drinks',
+        price: 600,
+        desc: 'Освежающий газированный напиток'
+      },
+      {
+        id: 'lipton_1',
+        name: 'Lipton 1 л',
+        category: 'drinks',
+        price: 700,
+        desc: 'Холодный чай'
+      },
+      {
+        id: 'lipton_05',
+        name: 'Lipton 0.5 л',
+        category: 'drinks',
+        price: 600,
+        desc: 'Холодный чай'
+      },
+      {
+        id: 'ayran',
+        name: 'Айран',
+        category: 'drinks',
+        price: 350,
+        desc: 'Традиционный освежающий айран'
+      }
+    ];
+
+    // CART STATE: key = itemId (or itemId_size), val = { item, size, count, price }
+    let cart = {};
+
+    function initMenu() {
+      renderMenu(menuData);
+      lucide.createIcons();
+    }
+
+    function renderMenu(items) {
+      const container = document.getElementById('menuGrid');
+      const noResults = document.getElementById('noResults');
+
+      if (items.length === 0) {
+        container.innerHTML = '';
+        noResults.classList.remove('hidden');
+        return;
+      }
+
+      noResults.classList.add('hidden');
+      container.innerHTML = items.map(item => {
+        if (item.hasSize) {
+          return `
+            <div class="bg-brand-card border border-brand-border rounded-2xl p-4 flex flex-col justify-between hover:border-brand-amber/40 transition duration-200">
+              <div>
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="font-brand font-bold text-base text-white">${item.name}</h3>
+                  ${item.badge ? `<span class="tag-badge text-[10px] font-bold text-brand-yellow px-2 py-0.5 rounded-full shrink-0">${item.badge}</span>` : ''}
+                </div>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">${item.desc}</p>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-brand-border/60 space-y-2.5">
+                <!-- Size Options -->
+                <div class="flex items-center justify-between bg-black/40 p-1.5 rounded-xl border border-brand-border/40">
+                  <div class="flex flex-col pl-1">
+                    <span class="text-[11px] text-gray-400">Маленький</span>
+                    <span class="text-xs font-bold text-white font-mono">${item.priceSmall} ₸</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    ${renderQuantityControls(item.id + '_small', item, 'Маленький', item.priceSmall)}
+                  </div>
+                </div>
+
+                <div class="flex items-center justify-between bg-black/40 p-1.5 rounded-xl border border-brand-border/40">
+                  <div class="flex flex-col pl-1">
+                    <span class="text-[11px] text-brand-yellow">Большой</span>
+                    <span class="text-xs font-bold text-white font-mono">${item.priceBig} ₸</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    ${renderQuantityControls(item.id + '_big', item, 'Большой', item.priceBig)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="bg-brand-card border border-brand-border rounded-2xl p-4 flex flex-col justify-between hover:border-brand-amber/40 transition duration-200">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <h3 class="font-brand font-bold text-base text-white">${item.name}</h3>
+                ${item.badge ? `<span class="tag-badge text-[10px] font-bold text-brand-amber px-2 py-0.5 rounded-full shrink-0">${item.badge}</span>` : ''}
+              </div>
+              <p class="text-xs text-gray-400 mt-2 leading-relaxed">${item.desc}</p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-brand-border/60 flex items-center justify-between">
+              <div>
+                <span class="text-xs text-gray-500 block">Цена</span>
+                <span class="font-brand font-bold text-base text-brand-amber font-mono">${item.price.toLocaleString('ru-RU')} ₸</span>
+              </div>
+              <div>
+                ${renderQuantityControls(item.id, item, '', item.price)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderQuantityControls(cartKey, item, size, price) {
+      const current = cart[cartKey] ? cart[cartKey].count : 0;
+      if (current === 0) {
+        return `
+          <button onclick="changeQuantity('${cartKey}', '${item.id}', '${size}', ${price}, 1)" 
+                  class="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-brand-amber hover:text-black text-gray-200 text-xs font-bold transition flex items-center gap-1 active:scale-95">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            Добавить
+          </button>
+        `;
+      }
+
+      return `
+        <div class="flex items-center bg-black/60 border border-brand-amber/40 rounded-xl px-1.5 py-1 space-x-2">
+          <button onclick="changeQuantity('${cartKey}', '${item.id}', '${size}', ${price}, -1)" class="w-6 h-6 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center active:scale-90 transition">
+            <i data-lucide="minus" class="w-3 h-3"></i>
+          </button>
+          <span class="text-xs font-mono font-bold text-brand-yellow w-4 text-center">${current}</span>
+          <button onclick="changeQuantity('${cartKey}', '${item.id}', '${size}', ${price}, 1)" class="w-6 h-6 rounded-lg bg-brand-amber hover:bg-brand-yellow text-black flex items-center justify-center active:scale-90 transition">
+            <i data-lucide="plus" class="w-3 h-3"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function changeQuantity(cartKey, itemId, size, price, delta) {
+      const baseItem = menuData.find(m => m.id === itemId);
+      if (!cart[cartKey]) {
+        if (delta > 0) {
+          cart[cartKey] = {
+            item: baseItem,
+            size: size,
+            price: price,
+            count: 1
+          };
+        }
+      } else {
+        cart[cartKey].count += delta;
+        if (cart[cartKey].count <= 0) {
+          delete cart[cartKey];
+        }
+      }
+
+      updateCartUI();
+      // re-render menu items so counters match
+      filterCategory(currentCategory, false);
+    }
+
+    let currentCategory = 'all';
+
+    function filterCategory(cat, updateTabs = true) {
+      currentCategory = cat;
+      if (updateTabs) {
+        document.querySelectorAll('.cat-pill').forEach(btn => {
+          btn.classList.remove('bg-brand-amber', 'text-black');
+          btn.classList.add('bg-brand-card', 'text-gray-300');
+        });
+        const clicked = event ? event.target : null;
+        if (clicked && clicked.classList.contains('cat-pill')) {
+          clicked.classList.remove('bg-brand-card', 'text-gray-300');
+          clicked.classList.add('bg-brand-amber', 'text-black');
+        }
+      }
+
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      let filtered = menuData;
+
+      if (cat !== 'all') {
+        filtered = filtered.filter(item => item.category === cat);
+      }
+
+      if (q) {
+        filtered = filtered.filter(item => 
+          item.name.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q)
+        );
+      }
+
+      renderMenu(filtered);
+    }
+
+    function handleSearch() {
+      filterCategory(currentCategory, false);
+    }
+
+    function quickOrderVavi() {
+      const vavi = menuData.find(x => x.id === 'doner_vavi');
+      if (vavi) {
+        changeQuantity('doner_vavi', 'doner_vavi', '', vavi.price, 1);
+        toggleCartModal(true);
+      }
+    }
+
+    function updateCartUI() {
+      let totalQty = 0;
+      let totalPrice = 0;
+
+      for (let k in cart) {
+        totalQty += cart[k].count;
+        totalPrice += cart[k].count * cart[k].price;
+      }
+
+      const counter = document.getElementById('cart-counter');
+      const floating = document.getElementById('floatingCart');
+      const floatingCount = document.getElementById('floatingCartCount');
+      const floatingTotal = document.getElementById('floatingCartTotal');
+      const modalTotal = document.getElementById('cartModalTotal');
+
+      if (totalQty > 0) {
+        counter.textContent = totalQty;
+        counter.classList.remove('hidden');
+        floating.classList.remove('hidden');
+        floatingCount.textContent = totalQty;
+        floatingTotal.textContent = totalPrice.toLocaleString('ru-RU');
+      } else {
+        counter.classList.add('hidden');
+        floating.classList.add('hidden');
+      }
+
+      modalTotal.textContent = totalPrice.toLocaleString('ru-RU');
+      renderCartDrawerItems();
+    }
+
+    function renderCartDrawerItems() {
+      const list = document.getElementById('cartItemsList');
+      const keys = Object.keys(cart);
+
+      if (keys.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 text-gray-500">
+            <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto stroke-[1.5] mb-2"></i>
+            <p class="text-sm">В корзине пока пусто</p>
+            <p class="text-xs text-gray-600 mt-1">Выберите сочные блюда из меню</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      list.innerHTML = keys.map(k => {
+        const row = cart[k];
+        return `
+          <div class="bg-black/40 border border-brand-border/60 rounded-xl p-3 flex items-center justify-between">
+            <div class="flex-1 pr-2">
+              <h4 class="text-sm font-semibold text-white leading-tight">
+                ${row.item.name} ${row.size ? `<span class="text-xs text-brand-amber font-mono font-normal">(${row.size})</span>` : ''}
+              </h4>
+              <p class="text-xs text-brand-yellow font-mono mt-0.5">${row.price.toLocaleString('ru-RU')} ₸ / шт.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div class="flex items-center bg-neutral-900 border border-brand-border rounded-lg p-1">
+                <button onclick="changeQuantity('${k}', '${row.item.id}', '${row.size}', ${row.price}, -1)" class="w-6 h-6 rounded bg-neutral-800 text-gray-300 hover:text-white flex items-center justify-center">
+                  <i data-lucide="minus" class="w-3 h-3"></i>
+                </button>
+                <span class="text-xs font-mono font-bold text-white px-2.5">${row.count}</span>
+                <button onclick="changeQuantity('${k}', '${row.item.id}', '${row.size}', ${row.price}, 1)" class="w-6 h-6 rounded bg-brand-amber text-black flex items-center justify-center">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                </button>
+              </div>
+              <div class="text-right min-w-[70px]">
+                <span class="font-mono text-sm font-bold text-white">${(row.count * row.price).toLocaleString('ru-RU')} ₸</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleCartModal(show) {
+      const modal = document.getElementById('cartModal');
+      if (show) {
+        modal.classList.remove('hidden');
+        renderCartDrawerItems();
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function togglePaymentModal(show) {
+      const modal = document.getElementById('paymentModal');
+      if (show) {
+        let total = 0;
+        let qty = 0;
+        for (let k in cart) {
+          total += cart[k].count * cart[k].price;
+          qty += cart[k].count;
+        }
+        document.getElementById('payAmount').textContent = total.toLocaleString('ru-RU');
+        document.getElementById('payItemsCount').textContent = qty + ' шт.';
+        
+        const typeElem = document.querySelector('input[name="orderType"]:checked');
+        document.getElementById('payOrderType').textContent = typeElem ? typeElem.value : 'С собой';
+
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function openPaymentSheet() {
+      if (Object.keys(cart).length === 0) {
+        alert('Корзина пуста. Добавьте блюда перед оплатой!');
+        return;
+      }
+      toggleCartModal(false);
+      togglePaymentModal(true);
+    }
+
+    function orderConfirmed() {
+      alert('Заказ принят в обработку! Спасибо за заказ в VAVILON FOOD!');
+      cart = {};
+      updateCartUI();
+      togglePaymentModal(false);
+      filterCategory(currentCategory, false);
+    }
+
+    function sendOrderWhatsApp() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        alert('Добавьте хотя бы одно блюдо в корзину!');
+        return;
+      }
+
+      const type = document.querySelector('input[name="orderType"]:checked')?.value || 'С собой';
+      let totalPrice = 0;
+      let message = `🔥 *НОВЫЙ ЗАКАЗ: VAVILON FOOD*\n`;
+      message += `Формат: *${type}*\n\n`;
+
+      keys.forEach((k, idx) => {
+        const item = cart[k];
+        const cost = item.count * item.price;
+        totalPrice += cost;
+        message += `${idx + 1}. ${item.item.name} ${item.size ? '(' + item.size + ')' : ''} — ${item.count} шт. x ${item.price} = *${cost} ₸*\n`;
+      });
+
+      message += `\n💰 *ИТОГО К ОПЛАТЕ:* ${totalPrice.toLocaleString('ru-RU')} ₸\n`;
+      message += `Ожидаю подтверждения!`;
+
+      // Instagram profile vavilon_food_ 
+      const encoded = encodeURIComponent(message);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    }
+
+    // Close on outside click for modals
+    window.addEventListener('click', (e) => {
+      const cartModal = document.getElementById('cartModal');
+      const payModal = document.getElementById('paymentModal');
+      if (e.target === cartModal) toggleCartModal(false);
+      if (e.target === payModal) togglePaymentModal(false);
+    });
+
+    // Start
+    window.addEventListener('DOMContentLoaded', initMenu);
+  </script>
+</body>
+</html>
